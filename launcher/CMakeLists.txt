@@ -319,6 +319,8 @@ set(MINECRAFT_SOURCES
     minecraft/mod/ModDetails.h
     minecraft/mod/ModFolderModel.h
     minecraft/mod/ModFolderModel.cpp
+    minecraft/mod/ModGroup.h
+    minecraft/mod/ModGroup.cpp
     minecraft/mod/Resource.h
     minecraft/mod/Resource.cpp
     minecraft/mod/ResourceFolderModel.h
@@ -1047,6 +1049,8 @@ SET(LAUNCHER_SOURCES
     ui/dialogs/ExportPackDialog.h
     ui/dialogs/ExportToModListDialog.cpp
     ui/dialogs/ExportToModListDialog.h
+    ui/dialogs/ModGroupDialog.cpp
+    ui/dialogs/ModGroupDialog.h
     ui/dialogs/IconPickerDialog.cpp
     ui/dialogs/IconPickerDialog.h
     ui/dialogs/ImportResourceDialog.cpp
@@ -1240,6 +1244,7 @@ qt_wrap_ui(LAUNCHER_UI
     ui/dialogs/ExportInstanceDialog.ui
     ui/dialogs/ExportPackDialog.ui
     ui/dialogs/ExportToModListDialog.ui
+    ui/dialogs/ModGroupDialog.ui
     ui/dialogs/IconPickerDialog.ui
     ui/dialogs/ImportResourceDialog.ui
     ui/dialogs/MSALoginDialog.ui

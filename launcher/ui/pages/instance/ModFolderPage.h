@@ -39,15 +39,18 @@
 #pragma once
 
 #include <QPointer>
+#include <memory>
 #include "ExternalResourcesPage.h"
 #include "ui/dialogs/ResourceDownloadDialog.h"
+
+class ModGroupManager;
 
 class ModFolderPage : public ExternalResourcesPage {
     Q_OBJECT
 
    public:
     explicit ModFolderPage(BaseInstance* inst, std::shared_ptr<ModFolderModel> model, QWidget* parent = nullptr);
-    virtual ~ModFolderPage() = default;
+    virtual ~ModFolderPage();
 
     void setFilter(const QString& filter) { m_fileSelectionFilter = filter; }
 
@@ -70,10 +73,12 @@ class ModFolderPage : public ExternalResourcesPage {
     void deleteModMetadata();
     void exportModMetadata();
     void changeModVersion();
+    void manageModGroups();
 
    protected:
     std::shared_ptr<ModFolderModel> m_model;
     QPointer<ResourceDownload::ModDownloadDialog> m_downloadDialog;
+    std::unique_ptr<ModGroupManager> m_group_manager;
 };
 
 class CoreModFolderPage : public ModFolderPage {

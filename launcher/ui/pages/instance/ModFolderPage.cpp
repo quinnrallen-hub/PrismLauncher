@@ -38,6 +38,7 @@
 
 #include "ModFolderPage.h"
 #include "ui/dialogs/ExportToModListDialog.h"
+#include "ui/dialogs/ModGroupDialog.h"
 #include "ui_ExternalResourcesPage.h"
 
 #include <QAbstractItemModel>
@@ -60,6 +61,7 @@
 #include "minecraft/VersionFilterData.h"
 #include "minecraft/mod/Mod.h"
 #include "minecraft/mod/ModFolderModel.h"
+#include "minecraft/mod/ModGroup.h"
 
 #include "tasks/ConcurrentTask.h"
 #include "tasks/Task.h"
@@ -68,6 +70,10 @@
 ModFolderPage::ModFolderPage(BaseInstance* inst, std::shared_ptr<ModFolderModel> model, QWidget* parent)
     : ExternalResourcesPage(inst, model, parent), m_model(model)
 {
+    // Initialize mod group manager
+    m_group_manager = std::make_unique<ModGroupManager>(inst->instanceRoot());
+    m_group_manager->load();
+
     ui->actionDownloadItem->setText(tr("Download Mods"));
     ui->actionDownloadItem->setToolTip(tr("Download mods from online mod platforms"));
     ui->actionDownloadItem->setEnabled(true);
@@ -107,7 +113,21 @@ ModFolderPage::ModFolderPage(BaseInstance* inst, std::shared_ptr<ModFolderModel>
     connect(ui->actionExportMetadata, &QAction::triggered, this, &ModFolderPage::exportModMetadata);
     ui->actionsToolbar->insertActionAfter(ui->actionViewHomepage, ui->actionExportMetadata);
 
+    // Add mod groups button
+    auto actionManageGroups = new QAction(tr("Manage Groups"), this);
+    actionManageGroups->setToolTip(tr("Create and manage mod groups for easy switching"));
+    connect(actionManageGroups, &QAction::triggered, this, &ModFolderPage::manageModGroups);
+    ui->actionsToolbar->insertActionAfter(ui->actionExportMetadata, actionManageGroups);
+
     ui->actionsToolbar->insertActionAfter(ui->actionViewFolder, ui->actionViewConfigs);
+}
+
+ModFolderPage::~ModFolderPage()
+{
+    // Save mod groups on exit
+    if (m_group_manager) {
+        m_group_manager->save();
+    }
 }
 
 bool ModFolderPage::shouldDisplay() const
@@ -335,6 +355,12 @@ void ModFolderPage::exportModMetadata()
     std::sort(selectedMods.begin(), selectedMods.end(), [](const Mod* a, const Mod* b) { return a->name() < b->name(); });
     ExportToModListDialog dlg(m_instance->name(), selectedMods, this);
     dlg.exec();
+}
+
+void ModFolderPage::manageModGroups()
+{
+    ModGroupDialog dialog(m_group_manager.get(), m_model.get(), this);
+    dialog.exec();
 }
 
 CoreModFolderPage::CoreModFolderPage(BaseInstance* inst, std::shared_ptr<ModFolderModel> mods, QWidget* parent)
